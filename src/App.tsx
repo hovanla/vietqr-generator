@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+// Force refresh deployment - v2.0.1
 import './index.css'
 
 function App() {
@@ -54,8 +55,8 @@ function App() {
     <div className="container">
       <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
         <div>
-          <h1>VietQR Bulk Generator</h1>
-          <p className="subtitle">Tạo hàng loạt mã QR MoMo từ danh sách số điện thoại</p>
+          <h1>VietQR Generator v2</h1>
+          <p className="subtitle">Phiên bản ổn định - Hỗ trợ Mobile & Slider</p>
         </div>
         <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
           <button onClick={toggleDarkMode} style={{ background: 'transparent', color: 'var(--text)', fontSize: '1.5rem', padding: '0.5rem' }}>
