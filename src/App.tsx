@@ -51,6 +51,27 @@ function App() {
 
   const toggleDarkMode = () => setIsDarkMode(!isDarkMode)
 
+  const handleDownloadAll = async () => {
+    for (const phone of phoneNumbers) {
+      const qrUrl = `https://img.vietqr.io/image/momo-${phone}-compact.png?amount=${amount}`
+      try {
+        const response = await fetch(qrUrl)
+        const blob = await response.blob()
+        const url = window.URL.createObjectURL(blob)
+        const link = document.createElement('a')
+        link.href = url
+        link.download = `QR_MoMo_${phone}_${amount}.png`
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+        window.URL.revokeObjectURL(url)
+        await new Promise(resolve => setTimeout(resolve, 300))
+      } catch (error) {
+        console.error(`Error downloading image for ${phone}:`, error)
+      }
+    }
+  }
+
   return (
     <div className="container">
       <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
@@ -113,9 +134,18 @@ function App() {
                 </button>
               </div>
             </div>
-            <button onClick={() => window.print()} style={{ background: '#333' }}>
-              🖨️ In / Lưu PDF
-            </button>
+            <div style={{ display: 'flex', gap: '1rem' }}>
+              <button 
+                onClick={handleDownloadAll} 
+                style={{ background: 'var(--primary)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                Tải tất cả
+              </button>
+              <button onClick={() => window.print()} style={{ background: '#333' }}>
+                🖨️ In / Lưu PDF
+              </button>
+            </div>
           </div>
 
           {viewMode === 'grid' ? (
@@ -173,6 +203,30 @@ function QRCard({ phone, amount, className = '' }: { phone: string, amount: numb
     setLoading(true)
   }, [phone, amount])
 
+  const handleDownload = async () => {
+    try {
+      const response = await fetch(qrUrl)
+      const blob = await response.blob()
+      const url = window.URL.createObjectURL(blob)
+      const link = document.createElement('a')
+      link.href = url
+      link.download = `QR_MoMo_${phone}_${amount}.png`
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+      window.URL.revokeObjectURL(url)
+    } catch (error) {
+      console.error('Error downloading image:', error)
+      const link = document.createElement('a')
+      link.href = qrUrl
+      link.target = '_blank'
+      link.download = `QR_MoMo_${phone}_${amount}.png`
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+    }
+  }
+
   return (
     <div className={`qr-card ${className}`}>
       <div className="qr-image-container">
@@ -190,6 +244,24 @@ function QRCard({ phone, amount, className = '' }: { phone: string, amount: numb
       </div>
       <div className="phone-number">{phone}</div>
       <div className="amount-label">{amount.toLocaleString()} VNĐ</div>
+      <button 
+        onClick={handleDownload}
+        className="download-btn"
+        style={{ marginTop: '1rem', width: '100%', padding: '0.6rem', background: 'rgba(255, 255, 255, 0.1)', color: 'var(--text)', border: '1px solid var(--border)', borderRadius: '8px', cursor: 'pointer', transition: 'all 0.2s', fontWeight: '500', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}
+        onMouseOver={(e) => {
+          e.currentTarget.style.background = 'var(--primary)'
+          e.currentTarget.style.color = '#fff'
+          e.currentTarget.style.borderColor = 'var(--primary)'
+        }}
+        onMouseOut={(e) => {
+          e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)'
+          e.currentTarget.style.color = 'var(--text)'
+          e.currentTarget.style.borderColor = 'var(--border)'
+        }}
+      >
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+        Tải xuống
+      </button>
     </div>
   )
 }
